@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: metabase
+      POSTGRES_PASSWORD: metabase_pass
+      POSTGRES_DB: metabase_db
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    networks:
+      - metabase_network
+
+  metabase:
+    image: metabase/metabase:latest
+    container_name: metabase
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabase_db
+      MB_DB_PORT: 5432
+      MB_DB_USER: metabase
+      MB_DB_PASS: metabase_pass
+      MB_DB_HOST: postgres
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    networks:
+      - metabase_network
+
+networks:
+  metabase_network:
+    driver: bridge
